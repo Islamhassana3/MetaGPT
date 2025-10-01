@@ -23,4 +23,4 @@ class Deployer:
             deployer = Deployer("2048_game/dist")
         """
         url = await self.static_server(dist_dir)
-        return "The Project is deployed to: " + url + "\n Deployment successed!"
+        return "The Project is deployed to: " + url + "\n Deployment succeeded!"
