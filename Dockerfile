@@ -17,9 +17,10 @@ RUN mkdir -p workspace &&\
     pip install --no-cache-dir -r requirements.txt &&\
     pip install -e .
 
-# Expose port for Railway.app
-EXPOSE $PORT
+# Expose default port (actual port is set via PORT environment variable at runtime)
+EXPOSE 8000
 
 # Run the web server using gunicorn for production
-CMD gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300 --pythonpath examples stream_output_via_api:app
+# Use shell form to ensure proper variable expansion
+CMD ["/bin/sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300 --pythonpath examples stream_output_via_api:app"]
 
