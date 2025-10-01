@@ -96,6 +96,26 @@ def download_file(filename):
     return send_from_directory(TUTORIAL_PATH, filename, as_attachment=True)
 
 
+@app.route("/health")
+def health():
+    """Health check endpoint for Railway.app and other platforms"""
+    return jsonify({"status": "ok"})
+
+
+@app.route("/")
+def index():
+    """Root endpoint to verify the server is running"""
+    return jsonify({
+        "status": "running",
+        "message": "MetaGPT API Server",
+        "endpoints": {
+            "/v1/chat/completions": "POST - Stream tutorial generation",
+            "/health": "GET - Health check",
+            "/download/<filename>": "GET - Download generated files"
+        }
+    })
+
+
 if __name__ == "__main__":
     """
     curl https://$server_address:$server_port/v1/chat/completions -X POST -d '{
@@ -109,8 +129,12 @@ if __name__ == "__main__":
         ]
     }'
     """
-    server_port = 7860
-    server_address = socket.gethostbyname(socket.gethostname())
+    import os
+    
+    # Use PORT environment variable for Railway.app compatibility
+    server_port = int(os.environ.get("PORT", 7860))
+    # Use 0.0.0.0 to listen on all interfaces for Railway.app
+    server_address = "0.0.0.0"
 
     set_llm_stream_logfunc(stream_pipe_log)
     stream_pipe_var: ContextVar[StreamPipe] = ContextVar("stream_pipe")

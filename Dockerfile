@@ -13,8 +13,13 @@ RUN npm install -g @mermaid-js/mermaid-cli &&\
 # Install Python dependencies and install MetaGPT
 COPY . /app/metagpt
 WORKDIR /app/metagpt
-RUN mkdir workspace &&\
+RUN mkdir -p workspace &&\
     pip install --no-cache-dir -r requirements.txt &&\
     pip install -e .
-# Running with an infinite loop using the tail command
-CMD ["sh", "-c", "tail -f /dev/null"]
+
+# Expose port for Railway.app
+EXPOSE $PORT
+
+# Run the web server using gunicorn for production
+CMD gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300 --pythonpath examples stream_output_via_api:app
+
